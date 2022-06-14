@@ -1,2 +1,2 @@
 # Scattering
-Computational scattering of light by simulated cloud ice. 
+Computational scattering of light by simulated cloud ice. Using ray tracing to simulate the scattering of light by cloud ice from a CM1 simulation. The work is being done on Frontera at TACC. The question is will using light scattering methods help resolve the low density cirrus plume above the anvil of a thunderstorm. The trick is to reproduce the look of satelite imagery of real cirrus plumes in software using simulation results. Being able to resolve the cirrus plume from simulation is important in characterizing the nature of the storm. 
