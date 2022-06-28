@@ -2,3 +2,5 @@
 CMakeFiles/
 build/
 *.o
+Makefile
+CMakeCache.txt
