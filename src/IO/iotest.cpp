@@ -2,6 +2,7 @@
  *
  */
 #include "Domain.h"
+#include "NetcdfStructuredVolume.h"
 #include <openvkl/openvkl.h>
 inline VKLDevice device;
 extern VKLVolume DomainToVolume(const Domain&);
@@ -24,7 +25,8 @@ int main(int argc, char **argv) {
     std::string filespec = directory+filename;
     std::string fieldname("qi");
     std::cout << "Opening " + filespec + " " << std::endl;
-    Domain Storm(filespec,fieldname);
-    VKLVolume StormVolume = DomainToVolume(Storm);
+    // Domain Storm(filespec,fieldname);
+    // VKLVolume StormVolume = DomainToVolume(Storm);
+    openvkl::testing::NetcdfStructuredVolume volume(filespec,fieldname);
     std::cout << "Done" << std::endl;
 }   

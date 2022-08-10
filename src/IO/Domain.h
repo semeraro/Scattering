@@ -1,6 +1,7 @@
 /*
  *
  */
+#pragma once
 #include "netcdf.hh"
 #include <vector>
 #include <string>
