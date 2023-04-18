@@ -1,6 +1,7 @@
 # ignore this stuff
 CMakeFiles/
 build/
+.vscode/
 *.o
 Makefile
 CMakeCache.txt
