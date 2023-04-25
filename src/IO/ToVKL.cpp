@@ -2,10 +2,9 @@
  * convert a domain to a volume. 
  */
 #include "Domain.h"
-#include <openvkl/openvkl.h>
+#include "openvkl/openvkl.h"
 #include <iostream>
 #include <sstream>
-#include "netcdf.hh"
 #include <vector>
 #include <math.h>
 #include <string>
