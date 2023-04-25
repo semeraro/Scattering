@@ -1,6 +1,11 @@
 #include "Domain.h"
 
 Domain::Domain(string filename, string fieldname) {
+    LoadData(filename,fieldname);
+    
+}
+int Domain::LoadData(string filename,string fieldname) {
+#ifdef WITH_NETCDF
     NcFile dataFile(filename.c_str(),NcFile::ReadOnly);
     if(!dataFile.is_valid()) {
         cout<< " bad file open " << filename << endl;
@@ -38,4 +43,7 @@ Domain::Domain(string filename, string fieldname) {
     int numdims = data->num_dims();
     cerr << "numvals " << numvals << " numdims " << numdims << endl;
     data->get(variable,1,nz,ny,nx);
+    return npts;
+#endif
+    return 0;
 }
