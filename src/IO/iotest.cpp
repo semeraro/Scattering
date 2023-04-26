@@ -2,7 +2,9 @@
  *
  */
 #include "Domain.h"
+#ifdef WITH_NETCDF
 #include "NetcdfStructuredVolume.h"
+#endif
 #include <openvkl/openvkl.h>
 inline VKLDevice device;
 extern VKLVolume DomainToVolume(const Domain&);
@@ -20,13 +22,15 @@ void init_vkl() {
 int main(int argc, char **argv) {
     init_vkl();
     // the file spec
-    std::string directory("/home1/01197/semeraro/CM1/ORFSCRATCH/2022/DaveS/old/");
-    std::string filename("mkow030-bigdomain-uncompressed.00252000.nc");
+    std::string directory("C:\\Users\\Dave Semeraro\\Documents\\VolumeRendering\\Data\\");
+    std::string filename("float.bov");
     std::string filespec = directory+filename;
     std::string fieldname("qi");
     std::cout << "Opening " + filespec + " " << std::endl;
-    // Domain Storm(filespec,fieldname);
+    Domain Storm(filespec,fieldname);
     // VKLVolume StormVolume = DomainToVolume(Storm);
+#ifdef WITH_NETCDF
     openvkl::testing::NetcdfStructuredVolume volume(filespec,fieldname);
+#endif
     std::cout << "Done" << std::endl;
 }   
