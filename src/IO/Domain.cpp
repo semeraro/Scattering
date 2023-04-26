@@ -1,10 +1,22 @@
 #include "Domain.h"
-
+struct BOV {
+    int nx,ny,nz;
+    string rawfilename;
+    string variable;
+    string endian;
+};
+BOV read_bov( string filename) {
+    
+}
 Domain::Domain(string filename, string fieldname) {
     LoadData(filename,fieldname);
     
 }
 int Domain::LoadData(string filename,string fieldname) {
+    cout<<" loading data from file" << filename << endl;
+    fnext = filename.substr(filename.find_last_of(".")+1);
+    if(fnext == "bov") cout<< "bov file" << endl;
+
 #ifdef WITH_NETCDF
     NcFile dataFile(filename.c_str(),NcFile::ReadOnly);
     if(!dataFile.is_valid()) {
