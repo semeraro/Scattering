@@ -8,12 +8,14 @@ static const int NC_ERR = 2;
 #endif
 #include "rkcommon/math/vec.h"
 #include <vector>
+#include <unordered_map>
 #include <string>
 #include <fstream>
 #include <ios>
 #include <iostream>
 #include <sstream>
 #include <math.h>
+#include <algorithm>
 using namespace std;
 using namespace rkcommon::math;
 struct Domain {

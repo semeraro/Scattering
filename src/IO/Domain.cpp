@@ -1,12 +1,66 @@
 #include "Domain.h"
 struct BOV {
     int nx,ny,nz;
+    int bx,by,bz;
     string rawfilename;
     string variable;
     string endian;
-};
-BOV read_bov( string filename) {
+    string format;
+    bool divide;
+    float time;
     
+};
+
+BOV read_bov( string filename) {
+    const static std::unordered_map<std::string,int> string_to_item{
+    {"DATA_FILE:",1},
+    {"DATA_SIZE:",2},
+    {"DATA_FORMAT:",3},
+    {"VARIABLE:",4},
+    {"DATA_ENDIAN:",5},
+    {"DIVIDE_BRICK:",6},
+    {"DATA_BRICKLETS:",7},
+    {"TIME:",8}
+    };
+    BOV filedata;
+    std::ifstream bovfile(filename);
+    std::string line,tmp;
+    std::vector<std::string> items;
+    while(std::getline(bovfile,line)) {
+        std::stringstream ss(line);
+        // parse out the line
+         while(std::getline(ss,tmp,' ')) {
+            items.push_back(tmp);
+        }
+        // do stuff based on first item
+        switch(string_to_item.at(items[0])) {
+            case 1:
+            filedata.rawfilename=items[1];
+            break;
+            case 2:
+            filedata.nx = stoi(items[1]);
+            filedata.ny = stoi(items[2]);
+            filedata.nz = stoi(items[3]);
+            break;
+            case 3:
+            filedata.format = items[4];
+            break;
+            case 4:
+            filedata.variable = items[1];
+            case 5:
+            filedata.endian = items[1];
+            case 6:
+            transform(items[1].begin(),items[1].end(),items[1].begin(),::toupper);
+            items[1] == "TRUE" ? filedata.divide = TRUE : filedata.divide = FALSE;
+            case 7:
+            filedata.bx = stoi(items[1]);
+            filedata.by = stoi(items[2]);
+            filedata.bz = stoi(items[3]);
+            case 8:
+            filedata.time = stof(items[1]);
+        }
+    }
+    return filedata;
 }
 Domain::Domain(string filename, string fieldname) {
     LoadData(filename,fieldname);
@@ -15,8 +69,11 @@ Domain::Domain(string filename, string fieldname) {
 int Domain::LoadData(string filename,string fieldname) {
     cout<<" loading data from file" << filename << endl;
     fnext = filename.substr(filename.find_last_of(".")+1);
-    if(fnext == "bov") cout<< "bov file" << endl;
-
+    if(fnext == "bov") {// load a raw single var file. ignore input fieldname
+        cout<< "bov file: " << filename << endl;
+        BOV filedata = read_bov(filename);
+        }
+    
 #ifdef WITH_NETCDF
     NcFile dataFile(filename.c_str(),NcFile::ReadOnly);
     if(!dataFile.is_valid()) {
