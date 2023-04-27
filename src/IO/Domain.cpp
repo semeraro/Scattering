@@ -8,6 +8,7 @@ struct BOV {
     string format;
     bool divide;
     float time;
+    void* thedata;
     
 };
 
@@ -26,6 +27,7 @@ BOV read_bov( string filename) {
     std::ifstream bovfile(filename);
     std::string line,tmp;
     std::vector<std::string> items;
+    // read the header. 
     while(std::getline(bovfile,line)) {
         std::stringstream ss(line);
         // parse out the line
@@ -60,6 +62,17 @@ BOV read_bov( string filename) {
             filedata.time = stof(items[1]);
         }
     }
+    // read the data itself
+    // for now just read some floats 
+    // adjust for datatype later
+    int count = filedata.nx*filedata.ny*filedata.nz;
+    int bytes = count*sizeof(float);
+    float *rawdata = new float[count];
+    std::ifstream rawfile(filedata.rawfilename, ios::in | ios::binary);
+    streampos src = 0;
+    rawfile.seekg(src,ios_base::beg);
+    rawfile.read((char *)rawdata,bytes);
+    filedata.thedata = (void *)rawdata;
     return filedata;
 }
 Domain::Domain(string filename, string fieldname) {

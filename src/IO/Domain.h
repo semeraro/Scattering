@@ -16,6 +16,7 @@ static const int NC_ERR = 2;
 #include <sstream>
 #include <math.h>
 #include <algorithm>
+#include <ios>
 using namespace std;
 using namespace rkcommon::math;
 struct Domain {
