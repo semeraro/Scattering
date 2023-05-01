@@ -48,3 +48,5 @@ target_link_libraries(ScatterIO  openvkl::openvkl rkcommon::rkcommon ${IOLIBS})
 add_executable(iotest ${CMAKE_CURRENT_SOURCE_DIR}/iotest.cpp)
 TARGET_COMPILE_DEFINITIONS(iotest PUBLIC ${COMPILER_DEFS})
 target_link_libraries(iotest openvkl::openvkl  ScatterIO)
+
+add_executable(readtest ${CMAKE_CURRENT_SOURCE_DIR}/readfloat.cpp)
