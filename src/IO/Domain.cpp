@@ -35,6 +35,7 @@ BOV read_bov( string filename) {
             items.push_back(tmp);
         }
         // do stuff based on first item
+        std::cout << " items[0] " << items[0] << " " << items.capacity() << std::endl;
         switch(string_to_item.at(items[0])) {
             case 1:
             filedata.rawfilename=items[1];
@@ -45,34 +46,51 @@ BOV read_bov( string filename) {
             filedata.nz = stoi(items[3]);
             break;
             case 3:
-            filedata.format = items[4];
+            filedata.format = items[1];
             break;
             case 4:
             filedata.variable = items[1];
+            break;
             case 5:
             filedata.endian = items[1];
+            break;
             case 6:
             transform(items[1].begin(),items[1].end(),items[1].begin(),::toupper);
             items[1] == "TRUE" ? filedata.divide = TRUE : filedata.divide = FALSE;
+            break;
             case 7:
             filedata.bx = stoi(items[1]);
             filedata.by = stoi(items[2]);
             filedata.bz = stoi(items[3]);
+            break;
             case 8:
             filedata.time = stof(items[1]);
+            break;
         }
+        items.clear();
     }
     // read the data itself
     // for now just read some floats 
     // adjust for datatype later
+    std::cout << "filedata " << filedata.nx << " " << filedata.ny << std::endl;
     int count = filedata.nx*filedata.ny*filedata.nz;
     int bytes = count*sizeof(float);
+    std::cout << "allocating " << count << " floats" << std::endl;
     float *rawdata = new float[count];
-    std::ifstream rawfile(filedata.rawfilename, ios::in | ios::binary);
-    streampos src = 0;
-    rawfile.seekg(src,ios_base::beg);
-    rawfile.read((char *)rawdata,bytes);
-    filedata.thedata = (void *)rawdata;
+    string filetoopen = "C:\\Users\\Dave Semeraro\\Documents\\VolumeRendering\\Data\\1000.float256";
+    std::cout << "open " << filetoopen << std::endl;
+    std::ifstream rawfile(filetoopen, ios::in | ios::binary);
+    std::ifstream input;
+    input.open(filetoopen,ios::in|ios::binary);
+    std::cout << " input good is " << input.good() << std::endl;
+    if(input.good())
+        input.read((char*)rawdata,sizeof(float)*count);
+    input.close();
+    std::cout << "sample " << rawdata[300] << std::endl;
+    //streampos src = 0;
+    //rawfile.seekg(src,ios_base::beg);
+    //rawfile.read((char *)rawdata,bytes);
+    //filedata.thedata = (void *)rawdata;
     return filedata;
 }
 Domain::Domain(string filename, string fieldname) {

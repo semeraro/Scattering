@@ -9,6 +9,7 @@ static const int NC_ERR = 2;
 #include "rkcommon/math/vec.h"
 #include <vector>
 #include <unordered_map>
+#include <filesystem>
 #include <string>
 #include <fstream>
 #include <ios>
