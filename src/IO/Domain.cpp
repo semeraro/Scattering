@@ -38,7 +38,7 @@ BOV read_bov( string filename) {
         std::cout << " items[0] " << items[0] << " " << items.capacity() << std::endl;
         switch(string_to_item.at(items[0])) {
             case 1:
-            filedata.rawfilename=items[1];
+            filedata.rawfilename=std::string(items[1]+" " +items[2]);
             break;
             case 2:
             filedata.nx = stoi(items[1]);
@@ -72,25 +72,24 @@ BOV read_bov( string filename) {
     // read the data itself
     // for now just read some floats 
     // adjust for datatype later
-    std::cout << "filedata " << filedata.nx << " " << filedata.ny << std::endl;
     int count = filedata.nx*filedata.ny*filedata.nz;
     int bytes = count*sizeof(float);
     std::cout << "allocating " << count << " floats" << std::endl;
     float *rawdata = new float[count];
-    string filetoopen = "C:\\Users\\Dave Semeraro\\Documents\\VolumeRendering\\Data\\1000.float256";
-    std::cout << "open " << filetoopen << std::endl;
-    std::ifstream rawfile(filetoopen, ios::in | ios::binary);
-    std::ifstream input;
-    input.open(filetoopen,ios::in|ios::binary);
-    std::cout << " input good is " << input.good() << std::endl;
-    if(input.good())
-        input.read((char*)rawdata,sizeof(float)*count);
-    input.close();
+    //string filetoopen = "C:\\Users\\Dave Semeraro\\Documents\\VolumeRendering\\Data\\1000.float256";
+    std::cout << "open " << filedata.rawfilename << std::endl;
+    std::ifstream rawfile(filedata.rawfilename, ios::in | ios::binary);
+    //std::ifstream input;
+    //input.open(filetoopen,ios::in|ios::binary);
+    //std::cout << " input good is " << input.good() << std::endl;
+    //if(input.good())
+    //    input.read((char*)rawdata,sizeof(float)*count);
+    //input.close();
+    streampos src = 0;
+    rawfile.seekg(src,ios_base::beg);
+    rawfile.read((char *)rawdata,bytes);
+    filedata.thedata = (void *)rawdata;
     std::cout << "sample " << rawdata[300] << std::endl;
-    //streampos src = 0;
-    //rawfile.seekg(src,ios_base::beg);
-    //rawfile.read((char *)rawdata,bytes);
-    //filedata.thedata = (void *)rawdata;
     return filedata;
 }
 Domain::Domain(string filename, string fieldname) {
@@ -103,6 +102,12 @@ int Domain::LoadData(string filename,string fieldname) {
     if(fnext == "bov") {// load a raw single var file. ignore input fieldname
         cout<< "bov file: " << filename << endl;
         BOV filedata = read_bov(filename);
+        // fill in the domain data
+        coords = {filedata.nx,filedata.ny,filedata.nz};
+        origin = {0.,0.,0.};
+        spacing = {1.,1.,1.};
+        variable = (float*)filedata.thedata;
+        npts = coords.product();
         }
     
 #ifdef WITH_NETCDF
