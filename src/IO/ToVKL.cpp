@@ -33,8 +33,12 @@ VKLVolume DomainToVolume(const Domain &cloud, VKLDevice device) {
     vklSetVec3f(volume,"gridOrigin",orgx,orgy,orgz);
     vklSetVec3f(volume,"gridSpacing",spx,spy,spz);
     VKLData data0 = vklNewData(dev,count,VKL_FLOAT,cloud.variable,VKL_DATA_SHARED_BUFFER,0);
+    VKLData attributes[] = {data0};
+    VKLData attributesData = vklNewData(dev,1,VKL_DATA,attributes,VKL_DATA_DEFAULT,0);
     vklSetData(volume,"data",data0);
+    vklSetData(volume,"adata",attributesData);
     vklRelease(data0);
+    vklRelease(attributesData);
     vklCommit(volume);
     vkl_range1f valuerange = vklGetValueRange(volume,0);
     std::cout << "Min: " << valuerange.lower << " Max: " << valuerange.upper <<std::endl;
