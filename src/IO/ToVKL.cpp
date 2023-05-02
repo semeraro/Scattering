@@ -13,11 +13,7 @@
 
 using namespace std;
 
-inline VKLDevice device;
-
-VKLDevice getVKLDevice() { return device; }
-
-VKLVolume DomainToVolume(const Domain &cloud) {
+VKLVolume DomainToVolume(const Domain &cloud, VKLDevice device) {
     int nx = cloud.coords.x;
     int ny = cloud.coords.y;
     int nz = cloud.coords.z;
@@ -28,7 +24,7 @@ VKLVolume DomainToVolume(const Domain &cloud) {
     float orgy = cloud.origin.y;
     float orgz = cloud.origin.z;
     long count = cloud.npts;
-    VKLDevice dev = getVKLDevice();
+    VKLDevice dev = device;
     if(!dev) {
         std::cout << "bogus device" << std::endl;
     }
