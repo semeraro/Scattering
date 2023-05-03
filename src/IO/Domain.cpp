@@ -35,7 +35,7 @@ BOV read_bov( string filename) {
             items.push_back(tmp);
         }
         // do stuff based on first item
-        std::cout << " items[0] " << items[0] << " " << items.capacity() << std::endl;
+        std::cout << " items[0] " << items[0] << " " << string_to_item.at(items[0]) << std::endl;
         switch(string_to_item.at(items[0])) {
             case 1:
             filedata.rawfilename=std::string(items[1]+" " +items[2]);
@@ -72,24 +72,39 @@ BOV read_bov( string filename) {
     // read the data itself
     // for now just read some floats 
     // adjust for datatype later
+//#define sphere 
+#ifdef sphere
+// do sphere
+{
+    int count = filedata.nx*filedata.ny*filedata.nz;
+    float *dat = new float[count];
+    vec3f center = {0.5,0.5,0.5};
+    float one = 1.0;
+    vec3f spc = {one/filedata.nx,one/filedata.ny,one/filedata.nz};
+    for(int k=0;k<filedata.nz;k++)
+        for(int j=0;j<filedata.ny;j++)
+            for(int i=0;i<filedata.nx;i++) {
+                vec3i idx = {i,j,k};
+                vec3f dist = idx*spc - center;
+                int index = i + j*filedata.nx + k*(filedata.nx*filedata.ny);
+                dat[index] = length(dist);
+            }
+    filedata.thedata = (void *)dat;
+}
+#endif
+#ifndef sphere
     int count = filedata.nx*filedata.ny*filedata.nz;
     int bytes = count*sizeof(float);
     std::cout << "allocating " << count << " floats" << std::endl;
     float *rawdata = new float[count];
-    //string filetoopen = "C:\\Users\\Dave Semeraro\\Documents\\VolumeRendering\\Data\\1000.float256";
     std::cout << "open " << filedata.rawfilename << std::endl;
     std::ifstream rawfile(filedata.rawfilename, ios::in | ios::binary);
-    //std::ifstream input;
-    //input.open(filetoopen,ios::in|ios::binary);
-    //std::cout << " input good is " << input.good() << std::endl;
-    //if(input.good())
-    //    input.read((char*)rawdata,sizeof(float)*count);
-    //input.close();
     streampos src = 0;
     rawfile.seekg(src,ios_base::beg);
     rawfile.read((char *)rawdata,bytes);
     filedata.thedata = (void *)rawdata;
     std::cout << "sample " << rawdata[300] << std::endl;
+#endif
     return filedata;
 }
 Domain::Domain(string filename, string fieldname) {
@@ -105,8 +120,11 @@ int Domain::LoadData(string filename,string fieldname) {
         // fill in the domain data
         coords = {filedata.nx,filedata.ny,filedata.nz};
         origin = {0.,0.,0.};
+        // unit cube 
         spacing = {1.,1.,1.};
+        spacing = spacing/(coords-1);
         variable = (float*)filedata.thedata;
+        std::cout << "Variable " << variable[300] << std::endl;
         npts = coords.product();
         }
     

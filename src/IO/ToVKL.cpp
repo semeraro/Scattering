@@ -32,6 +32,8 @@ VKLVolume DomainToVolume(const Domain &cloud, VKLDevice device) {
     vklSetVec3i(volume,"dimensions",nx,ny,nz);
     vklSetVec3f(volume,"gridOrigin",orgx,orgy,orgz);
     vklSetVec3f(volume,"gridSpacing",spx,spy,spz);
+    vklSetInt(volume,"filter",VKL_FILTER_TRILINEAR);
+    vklSetInt(volume,"graientFilter",VKL_FILTER_TRILINEAR);
     VKLData data0 = vklNewData(dev,count,VKL_FLOAT,cloud.variable,VKL_DATA_SHARED_BUFFER,0);
     VKLData attributes[] = {data0};
     VKLData attributesData = vklNewData(dev,1,VKL_DATA,attributes,VKL_DATA_DEFAULT,0);
