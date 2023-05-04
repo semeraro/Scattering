@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
     VKLDevice dev = init_vkl();
     // the file spec
     std::string directory("C:\\Users\\Dave Semeraro\\Documents\\VolumeRendering\\Data\\");
-    std::string filename("float.bov");
+    std::string filename("cloud.bov");
     std::string filespec = directory+filename;
     std::string fieldname("qi");
     std::cout << "Opening " + filespec + " " << std::endl;
@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
     int numValues = 1;
     float values[1];
     //values[1] = 65000.0;
-    values[0] = 65500.0;
+    values[0] = 0.5;
     //values[0] = 0.4;
     VKLData valuesData = vklNewData(dev,
 				numValues,
@@ -81,7 +81,7 @@ int main(int argc, char **argv) {
     vklRelease(valuesData);
     vklCommit(hitContext);
     // framebuffer and friends
-    vec2i imagesize={2048,2048};
+    vec2i imagesize={2000,2000};
     auto numPixels = imagesize.x*imagesize.y;
     FrameBuffer framebuffer;
     framebuffer.resize(numPixels);
@@ -95,12 +95,12 @@ int main(int argc, char **argv) {
     std::fill(accum_g.begin(),accum_g.end(),0.f);
     std::fill(accum_b.begin(),accum_b.end(),0.f);
     std::vector<Ray> rayvector(numPixels);
-    float tanfov = tan(20.0*M_PI/180.0);
+    float tanfov = tan(40.0*M_PI/180.0);
     // load rays starting with the top left corner, moving right and down
     for(int rayindex = 0;rayindex < numPixels;rayindex++){
 	    Ray ray;
-	    ray.t = range1f(0.f,50.f);
-	    ray.org = vec3f(0.5,0.5,2.0);
+	    ray.t = range1f(2000.f,4500.f);
+	    ray.org = vec3f(1250.0,1500.0,3400.0);
 	    auto pixel = vec2i(rayindex % imagesize.x,rayindex/imagesize.y);
 	    float u = pixel.x/float(imagesize.x-1); // 0 < u <1
 	    float v = pixel.y/float(imagesize.y-1);
@@ -108,6 +108,7 @@ int main(int argc, char **argv) {
 	    float y = tanfov*(v - 0.5);
 	    float z = -1.f;
 	    ray.dir = normalize(vec3f(x,y,z));
+        //std::cout << pixel << " " << vec2f(u,v) << " " << vec3f(x,y,z) << " " << ray.org << std::endl;
         //std::cout << ray.dir.x << ' ' << ray.dir.y << ' ' << ray.dir.z << std::endl;
 	    rayvector[rayindex] = ray;
         //std::cout <<rayvector[rayindex].dir.x << std::endl;
@@ -140,7 +141,10 @@ int main(int argc, char **argv) {
 	        vec3f color(0.f);
 	        float alpha = 0.f;
             //while(vklIterateHit(hitIterator,&hit) && alpha < 0.99f) {
+            int numhits = 0;
+            //std::cout << "pixel " << pixelindex << std::endl;
             if(vklIterateHit(hitIterator,&hit)){// if I get a single hit along this ray
+                numhits++;
 	    	    const vec3f c = (*ray).org + hit.t * (*ray).dir;
 	    	    const vkl_vec3f grad = vklComputeGradient(
 	    	    	sampler,(vkl_vec3f *)&c, 0,0);
@@ -152,25 +156,24 @@ int main(int argc, char **argv) {
 	    	    float illum = 0.f;
 	    	    if(length(N) > 0) {
 	    	    	//illum=0.1f;
-                    for(int i=0;i<2;i++) {
+                    for(int i=0;i<1;i++) {
 	    			    const vec3f wo = lightDir[i]; // light direction
 	    			    const float co = dot(N,wo); // cos angle between surface normal and light direction
-	    			    if((co>0)==(ci>0)){ // test for shadow
-	    			    	//std::cout << "shadow test" << std::endl;
-	    			    	VKLHit shadowHit;
-	    			    	vkl_range1f tShadowRange;
-	    			    	tShadowRange.lower = hit.epsilon;
-	    			    	tShadowRange.upper = inf;
-	    			    	VKLHitIterator shadowIterator =
-	    			    	vklInitHitIterator(hitContext,
-	    			    	    (vkl_vec3f *)&c,(vkl_vec3f *)&wo,
-	    			    	    &tShadowRange,0,sbuffer);
-	    			    	if(!vklIterateHit(shadowIterator,&shadowHit)) { 
-	    			    	    illum += abs(co) * emission[i];
-	    			    	} else {
-                                illum += abs(co) * emission[i];
-                            }
-	    			    }
+	    			    illum += abs(co)*emission[i];
+                        //if((co>0)==(ci>0)){ // test for shadow
+	    			    //	//std::cout << "shadow test" << std::endl;
+	    			    //	VKLHit shadowHit;
+	    			    //	vkl_range1f tShadowRange;
+	    			    //	tShadowRange.lower = hit.epsilon;
+	    			    //	tShadowRange.upper = inf;
+	    			    //	VKLHitIterator shadowIterator =
+	    			    //	vklInitHitIterator(hitContext,
+	    			    //	    (vkl_vec3f *)&c,(vkl_vec3f *)&wo,
+	    			    //	    &tShadowRange,0,sbuffer);
+	    			    //	if(vklIterateHit(shadowIterator,&shadowHit)) { 
+	    			    //	    illum += 0;
+	    			    //	}
+	    			    //}
 	    		    }
                 } else {// no normal for some reason
 	    	    	illum = 1.f;
@@ -178,7 +181,9 @@ int main(int argc, char **argv) {
 	    	    vec4f surfaceColorAndOpacity = {0.5f,0.5f,0.5f,1.0f};
 	    	    const vec3f albedo = vec3f(surfaceColorAndOpacity);
 	    	    color = color +(1-alpha)*illum*albedo;
-	    	    alpha = alpha + (1.f - alpha)*surfaceAlpha;
+	    	    //alpha = alpha + (1.f - alpha)*surfaceAlpha;
+                //std::cout << "Hit: " << numhits << " " << hit.sample << " " << hit.t << " " <<
+                // hit.epsilon << " " << illum << std::endl;
 	    	    //std::cout << color.x << " " << color.y << " " << color.z << " " << alpha << std::endl;
 	        }    
             float &ar = accum_r[pixelindex];
@@ -190,7 +195,8 @@ int main(int argc, char **argv) {
             //framebuffer[pixelindex] = vec3f(pow(ar,1.f/2.2f),
             //                            pow(ag,1.f/2.2f),
             //                            pow(ab,1.f/2.2f));
-            framebuffer[pixelindex] = vec3f(ar,ag,ab);
+            //framebuffer[pixelindex] = vec3f(ar,ag,ab);
+            framebuffer[pixelindex] = color;
             pixelindex++;
             ray++;
         }
