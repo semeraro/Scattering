@@ -93,8 +93,8 @@ BOV read_bov( string filename) {
 }
 #endif
 #ifndef sphere
-    int count = filedata.nx*filedata.ny*filedata.nz;
-    int bytes = count*sizeof(float);
+    unsigned long count = filedata.nx*filedata.ny*filedata.nz;
+    unsigned long bytes = count*sizeof(float);
     std::cout << "allocating " << count << " floats" << std::endl;
     float *rawdata = new float[count];
     std::cout << "open " << filedata.rawfilename << std::endl;
@@ -122,7 +122,7 @@ int Domain::LoadData(string filename,string fieldname) {
         origin = {0.,0.,0.};
         // unit cube 
         spacing = {1.,1.,1.};
-        spacing = spacing/(coords-1);
+        //spacing = spacing/(coords-1);
         variable = (float*)filedata.thedata;
         std::cout << "Variable " << variable[300] << std::endl;
         npts = coords.product();

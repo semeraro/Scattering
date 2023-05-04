@@ -21,7 +21,7 @@ static const int NC_ERR = 2;
 using namespace std;
 using namespace rkcommon::math;
 struct Domain {
-    long npts;
+    unsigned long npts;
     vec3i coords;
     vec3f origin;
     vec3f spacing;

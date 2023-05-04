@@ -23,7 +23,7 @@ VKLVolume DomainToVolume(const Domain &cloud, VKLDevice device) {
     float orgx = cloud.origin.x;
     float orgy = cloud.origin.y;
     float orgz = cloud.origin.z;
-    long count = cloud.npts;
+    unsigned long count = cloud.npts;
     VKLDevice dev = device;
     if(!dev) {
         std::cout << "bogus device" << std::endl;
