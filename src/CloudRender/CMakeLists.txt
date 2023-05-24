@@ -17,7 +17,6 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-project(CloudScatter LANGUAGES CXX)
 cmake_policy(SET CMP0074 NEW)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
@@ -26,17 +25,21 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
 # that are not really VKL objects. They are part of the testing
 # and examples programs. I use them rather than write my own.
 # putting in hardcoded paths is probably not a good idea. 
-set(VKL_RENDERER_DIR "$ENV{WORK2}/OpenVKL/examples/interactive")
-set(VKL_TESTING_DIR "$ENV{WORK2}/OpenVKL/testing")
-include_directories(${VKL_RENDERER_DIR} ${VKL_TESTING_DIR})
+#set(VKL_RENDERER_DIR "$ENV{WORK2}/OpenVKL/examples/interactive")
+#set(VKL_TESTING_DIR "$ENV{WORK2}/OpenVKL/testing")
+#include_directories(${VKL_RENDERER_DIR} ${VKL_TESTING_DIR})
 
-find_package(openvkl REQUIRED)
-find_package(rkcommon REQUIRED)
+#find_package(openvkl REQUIRED)
+#find_package(rkcommon REQUIRED)
 # now find the rendering library 
-find_library(RENDERERS NAMES vkl_example_renderers HINTS "$ENV{WORK2}/OpenVKL/buildgcc/openvkl/build")
-# and the testing library
-find_library(TESTING NAMES openvkl_testing HINTS "$ENV{WORK2}/OpenVKL/buildgcc/openvkl/build")
+set(VKL_RENDERER_DIR "C:\\$ENV{homepath}\\Documents\\VolumeRendering\\openvkl\\examples\\interactive")
+set(VKL_TESTING_DIR "$ENV{homepath}\\Documents\\VolumeRendering\\openvkl\\testing")
 
-add_executable(CloudScatter ${CMAKE_CURRENT_SOURCE_DIR}/Cloud.cpp)
-target_link_libraries(CloudScatter openvkl::openvkl rkcommon::rkcommon ${RENDERERS} ${TESTING})
+find_library(RENDERERS NAMES vkl_example_renderers HINTS "$ENV{homepath}\\Documents\\VolumeRendering\\openvkl\\superbuild\\build\\openvkl\\build\\Debug")
+# and the testing library
+find_library(TESTING NAMES openvkl_testing HINTS "$ENV{homepath}\\Documents\\VolumeRendering\\openvkl\\superbuild\\build\\openvkl\\build\\Debug")
+
+add_executable(CloudRender ${CMAKE_CURRENT_SOURCE_DIR}/Cloud.cpp)
+target_include_directories(CloudRender PUBLIC ${VKL_RENDERER_DIR} ${VKL_TESTING_DIR})
+target_link_libraries(CloudRender openvkl::openvkl rkcommon::rkcommon ${RENDERERS} ${TESTING})
 
