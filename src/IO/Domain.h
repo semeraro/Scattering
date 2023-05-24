@@ -7,6 +7,7 @@
 static const int NC_ERR = 2;
 #endif
 #include "rkcommon/math/vec.h"
+#include <openvkl/openvkl.h>
 #include <vector>
 #include <unordered_map>
 #include <filesystem>
@@ -30,3 +31,4 @@ struct Domain {
     Domain(string filename, string fieldname);
     int LoadData(string filename, string fieldname);
 };
+VKLVolume DomainToVolume(const Domain &cloud, VKLDevice device);
