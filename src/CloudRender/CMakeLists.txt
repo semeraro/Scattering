@@ -38,8 +38,8 @@ set(VKL_TESTING_DIR "$ENV{homepath}\\Documents\\VolumeRendering\\openvkl\\testin
 find_library(RENDERERS NAMES vkl_example_renderers HINTS "$ENV{homepath}\\Documents\\VolumeRendering\\openvkl\\superbuild\\build\\openvkl\\build\\Debug")
 # and the testing library
 find_library(TESTING NAMES openvkl_testing HINTS "$ENV{homepath}\\Documents\\VolumeRendering\\openvkl\\superbuild\\build\\openvkl\\build\\Debug")
-
+find_library(SCATTERIO NAMES ScatterIO HINTS "$ENV{homepath}\\Documents\\VolumeRendering\\Scattering\\src\\build\\Debug")
 add_executable(CloudRender ${CMAKE_CURRENT_SOURCE_DIR}/Cloud.cpp)
-target_include_directories(CloudRender PUBLIC ${VKL_RENDERER_DIR} ${VKL_TESTING_DIR})
-target_link_libraries(CloudRender openvkl::openvkl rkcommon::rkcommon ${RENDERERS} ${TESTING})
+target_include_directories(CloudRender PUBLIC ${VKL_RENDERER_DIR} ${VKL_TESTING_DIR} ..)
+target_link_libraries(CloudRender openvkl::openvkl rkcommon::rkcommon ${RENDERERS} ${TESTING} ${SCATTERIO})
 
