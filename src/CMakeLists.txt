@@ -18,8 +18,10 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
 
 find_package(openvkl REQUIRED)
+find_package(rkcommon REQUIRED)
 
 add_subdirectory(IO) # make the IO library
+add_subdirectory(CloudRender)
 #add_executable(vklTutorial ${CMAKE_CURRENT_SOURCE_DIR}/vklTutorial.c)
 #target_link_libraries(vklTutorial openvkl::openvkl)
 
