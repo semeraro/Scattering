@@ -33,7 +33,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
 #find_package(rkcommon REQUIRED)
 # now find the rendering library 
 set(VKL_RENDERER_DIR "C:\\$ENV{homepath}\\Documents\\VolumeRendering\\openvkl\\examples\\interactive")
-set(VKL_TESTING_DIR "$ENV{homepath}\\Documents\\VolumeRendering\\openvkl\\testing")
+set(VKL_TESTING_DIR "C:\\$ENV{homepath}\\Documents\\VolumeRendering\\openvkl\\testing")
 
 find_library(RENDERERS NAMES vkl_example_renderers HINTS "$ENV{homepath}\\Documents\\VolumeRendering\\openvkl\\superbuild\\build\\openvkl\\build\\Debug")
 # and the testing library
@@ -43,5 +43,5 @@ add_executable(CloudRender ${CMAKE_CURRENT_SOURCE_DIR}/Cloud.cpp)
 target_include_directories(CloudRender PUBLIC ${VKL_RENDERER_DIR} ${VKL_TESTING_DIR} ..)
 target_link_libraries(CloudRender openvkl::openvkl rkcommon::rkcommon ${RENDERERS} ${TESTING} ${SCATTERIO})
 add_executable(RaycastCloud ${CMAKE_CURRENT_SOURCE_DIR}/RaycastCloud.cpp)
-target_include_directories(RaycastCloud PUBLIC ..)
-target_link_libraries(RaycastCloud openvkl::openvkl rkcommon::rkcommon $(SCATTERIO))
+target_include_directories(RaycastCloud PUBLIC ${VKL_TESTING_DIR} ..)
+target_link_libraries(RaycastCloud openvkl::openvkl rkcommon::rkcommon ${TESTING} ${SCATTERIO})
