@@ -42,4 +42,6 @@ find_library(SCATTERIO NAMES ScatterIO HINTS "$ENV{homepath}\\Documents\\VolumeR
 add_executable(CloudRender ${CMAKE_CURRENT_SOURCE_DIR}/Cloud.cpp)
 target_include_directories(CloudRender PUBLIC ${VKL_RENDERER_DIR} ${VKL_TESTING_DIR} ..)
 target_link_libraries(CloudRender openvkl::openvkl rkcommon::rkcommon ${RENDERERS} ${TESTING} ${SCATTERIO})
-
+add_executable(RaycastCloud ${CMAKE_CURRENT_SOURCE_DIR}/RaycastCloud.cpp)
+target_include_directories(RaycastCloud PUBLIC ..)
+target_link_libraries(RaycastCloud openvkl::openvkl rkcommon::rkcommon $(SCATTERIO))
