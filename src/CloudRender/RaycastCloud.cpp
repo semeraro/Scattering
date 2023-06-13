@@ -3,11 +3,13 @@
 #include "apps/AppInit.h"
 #include "rkcommon/utility/SaveImage.h"
 #include <openvkl/openvkl.h>
+#include "renderer/RayMarchVolRenderer.h"
+#include "renderer/Ray.h"
 #include "IO/Domain.h"
 #if defined(_MSC_VER)
 #include <malloc.h>   // _malloca
 #endif
-
+#define useRayMarchRenderer
 int main(int argc, char **argv) {
     
     std::cout << " Starting ... " << std::endl;
@@ -26,6 +28,22 @@ int main(int argc, char **argv) {
     std::cout << lower << "\t" << upper << std::endl;
     cloud.bounds.lower = lower;
     cloud.bounds.upper = upper;
+    vec3f org = vec3f(75.0,50.0,20.0);
+    vec3f dir = vec3f(0.,0.,-1.0);
+    // add a renderer
+#ifdef useRayMarchRenderer
+    RayMarchVolRenderer ren = RayMarchVolRenderer(cloud);
+    ren.setCameraEyePoint(org);
+    ren.setCameraFocalPoint(org+dir);
+    Ray r;
+    r.org = org;
+    r.dir = dir;
+    auto t = intersectRayBox(org,dir,cloud.bounds);
+    r.t = t;
+    vec4f rgba{0.,0.,0.,1.};
+    float wt;
+    ren.RenderPixel(r,rgba,wt);
+#else
     // generate a vklVolume
     VKLVolume vklCloud = DomainToVolume(cloud,getOpenVKLDevice());
     vkl_range1f valueRange = vklGetValueRange(vklCloud, 0);
@@ -47,8 +65,6 @@ int main(int argc, char **argv) {
     vklSetData(intervalContext, "valueRanges", rangesData);
     vklRelease(rangesData);
     vklCommit(intervalContext);
-    vec3f org = vec3f(75.0,50.0,20.0);
-    vec3f dir = vec3f(0.,0.,-1.0);
     auto t = intersectRayBox(org,dir,cloud.bounds);
     vkl_range1f tRange;
     tRange.lower = t.lower;
@@ -74,5 +90,6 @@ int main(int argc, char **argv) {
           interval.valueRange.upper,
           interval.nominalDeltaT);
     }
+#endif
     shutdownOpenVKL();
 }
