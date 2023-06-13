@@ -27,7 +27,7 @@ BOV_METADATA read_bov_metadata( string filename) {
             items.push_back(tmp);
         }
         // do stuff based on first item
-        std::cout << " items[0] " << items[0] << " " << string_to_item.at(items[0]) << std::endl;
+        //std::cout << " items[0] " << items[0] << " " << string_to_item.at(items[0]) << std::endl;
         switch(string_to_item.at(items[0])) {
             case 1:
             filedata.rawfilename=std::string(items[1]);

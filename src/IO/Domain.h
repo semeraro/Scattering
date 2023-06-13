@@ -7,6 +7,7 @@
 static const int NC_ERR = 2;
 #endif
 #include "rkcommon/math/vec.h"
+#include "rkcommon/math/box.h"
 #include <openvkl/openvkl.h>
 #include <vector>
 #include <unordered_map>
@@ -43,5 +44,6 @@ struct Domain {
     string fnext;
     Domain(string filename, string fieldname,bool metadataonly = true);
     int LoadData(string filename, string fieldname,bool metadataonly);
+    box3f bounds;
 };
 VKLVolume DomainToVolume(const Domain &cloud, VKLDevice device,VKLVolume oldvolume=nullptr);
