@@ -15,7 +15,7 @@ class RayMarchVolRenderer {
     ~RayMarchVolRenderer();
     void RenderPixel(Ray r, vec4f &rgba, float &weight );
     private:
-    camera cam; // default camera size is 1024x768
+    camera cam; // default camera size is 1024x768. fov = 60 degrees
     //Framebuffer fb;
     VKLVolume volume;
     VKLSampler sampler;
