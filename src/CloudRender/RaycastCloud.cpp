@@ -1,6 +1,5 @@
 // simple raycast volume rendering
 //
-#include "apps/AppInit.h"
 #include "rkcommon/utility/SaveImage.h"
 #include <openvkl/openvkl.h>
 #include "renderer/RayMarchVolRenderer.h"
