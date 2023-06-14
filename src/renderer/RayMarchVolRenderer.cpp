@@ -23,7 +23,7 @@ RayMarchVolRenderer::RayMarchVolRenderer(Domain &dom) : cam(camera(vec2i(1024,76
     sampler = vklNewSampler(volume);
     vklCommit(sampler);
     // intervalIteratorContext
-    VKLIntervalIteratorContext intervalContext = vklNewIntervalIteratorContext(sampler);
+    intervalContext = vklNewIntervalIteratorContext(sampler);
     vklSetInt(intervalContext, "attributeIndex", 0);
     vkl_range1f ranges[1] = {{0.000001, volumeValueRange.upper}};
     int num_ranges        = 1;
@@ -64,7 +64,6 @@ void RayMarchVolRenderer::RenderPixel(Ray r, vec4f &rgba, float &weight) {
           interval.valueRange.upper,
           interval.nominalDeltaT);
     }
-    free(buffer);
 };
 void RayMarchVolRenderer::setCameraResolution(vec2i resolution) {
   cam.set_resolution(resolution);
