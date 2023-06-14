@@ -36,7 +36,7 @@ if(BUILD_NETCDF)
 endif(BUILD_NETCDF)
 message(" found openvkl ${openvkl_DIR}")
 
-add_library(ScatterIO SHARED ${CMAKE_CURRENT_SOURCE_DIR}/Domain.cpp ${CMAKE_CURRENT_SOURCE_DIR}/ToVKL.cpp)
+add_library(ScatterIO STATIC ${CMAKE_CURRENT_SOURCE_DIR}/Domain.cpp ${CMAKE_CURRENT_SOURCE_DIR}/ToVKL.cpp)
 TARGET_COMPILE_DEFINITIONS(ScatterIO PUBLIC ${COMPILER_DEFS})
 target_include_directories(ScatterIO PUBLIC ${IOINCLUDES})
 target_link_libraries(ScatterIO  openvkl::openvkl rkcommon::rkcommon ${IOLIBS})

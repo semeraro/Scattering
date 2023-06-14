@@ -31,7 +31,7 @@ find_library(TESTING NAMES openvkl_testing HINTS "$ENV{homepath}\\Documents\\Vol
 #
 message(" found openvkl ${openvkl_DIR}")
 
-add_library(Renderers SHARED ${CMAKE_CURRENT_SOURCE_DIR}/RayMarchVolRenderer.cpp ${CMAKE_CURRENT_SOURCE_DIR}/camera.cpp)
+add_library(Renderers STATIC ${CMAKE_CURRENT_SOURCE_DIR}/RayMarchVolRenderer.cpp ${CMAKE_CURRENT_SOURCE_DIR}/camera.cpp)
 TARGET_COMPILE_DEFINITIONS(Renderers PUBLIC ${COMPILER_DEFS})
 target_include_directories(Renderers PUBLIC ${IOINCLUDES} ${VKL_TESTING_DIR} ..)
 target_link_libraries(Renderers  openvkl::openvkl rkcommon::rkcommon ${SCATTERIO} ${TESTING})
