@@ -34,7 +34,6 @@ if(BUILD_NETCDF)
     set(IOINCLUDES ${IOINCLUDES} ${netCDF_INCLUDE_DIR})
     link_directories(${netCDF_LIB_DIR})
 endif(BUILD_NETCDF)
-message(" found openvkl ${openvkl_DIR}")
 
 add_library(ScatterIO STATIC ${CMAKE_CURRENT_SOURCE_DIR}/Domain.cpp ${CMAKE_CURRENT_SOURCE_DIR}/ToVKL.cpp)
 TARGET_COMPILE_DEFINITIONS(ScatterIO PUBLIC ${COMPILER_DEFS})

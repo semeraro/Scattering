@@ -13,28 +13,21 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # visual studio needs the export all symbols flag
 # on to build shared libs. 
 if(MSVC)
-    message(" doing shared library foo")
+    #message(" doing shared library foo")
     set(BUILD_SHARED_LIBS TRUE)
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 endif(MSVC)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
+#
 set(COMPILER_DEFS "")
 set(IOLIBS "") 
 set(IOINCLUDES "")
 set(VKL_TESTING_DIR "C:\\$ENV{homepath}\\Documents\\VolumeRendering\\openvkl\\testing")
-find_package(openvkl REQUIRED)
-find_package(rkcommon REQUIRED)
-find_library(SCATTERIO NAMES ScatterIO HINTS "$ENV{homepath}\\Documents\\VolumeRendering\\Scattering\\src\\build\\Debug")
-find_library(TESTING NAMES openvkl_testing HINTS "$ENV{homepath}\\Documents\\VolumeRendering\\openvkl\\superbuild\\build\\openvkl\\build\\Debug")
-#
-# options to build IO bits for different file types
-#
-message(" found openvkl ${openvkl_DIR}")
 
-add_library(Renderers STATIC ${CMAKE_CURRENT_SOURCE_DIR}/RayMarchVolRenderer.cpp ${CMAKE_CURRENT_SOURCE_DIR}/camera.cpp)
+add_library(Renderers STATIC ${CMAKE_CURRENT_SOURCE_DIR}/RayMarchVolRenderer.cpp ${CMAKE_CURRENT_SOURCE_DIR}/camera.cpp ${CMAKE_CURRENT_SOURCE_DIR}/TransferFunction.cpp)
 TARGET_COMPILE_DEFINITIONS(Renderers PUBLIC ${COMPILER_DEFS})
 target_include_directories(Renderers PUBLIC ${IOINCLUDES} ${VKL_TESTING_DIR} ..)
-target_link_libraries(Renderers  openvkl::openvkl rkcommon::rkcommon ${SCATTERIO} ${TESTING})
+target_link_libraries(Renderers  openvkl::openvkl rkcommon::rkcommon ScatterIO ${TESTING})
+add_dependencies(Renderers ScatterIO)
 
 #add_executable(iotest ${CMAKE_CURRENT_SOURCE_DIR}/iotest.cpp)
 #TARGET_COMPILE_DEFINITIONS(iotest PUBLIC ${COMPILER_DEFS})
