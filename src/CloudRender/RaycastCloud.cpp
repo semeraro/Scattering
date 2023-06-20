@@ -17,6 +17,7 @@ int main(int argc, char **argv) {
     // letting the openvkl volume read the raw data and build a volume.
     std::string directory("C:\\Users\\Dave Semeraro\\Documents\\VolumeRendering\\Data\\");
     std::string filename("cloud.bov");
+    std::string outfilename("cloud.pfm");
     std::string filespec = directory+filename;
     // build a domain object
     Domain cloud = Domain(filespec,"qi",false);
@@ -24,24 +25,31 @@ int main(int argc, char **argv) {
     cloud.spacing = vec3f(0.03,0.03,0.03); // 30 meter spacing
     vec3f lower = cloud.origin;
     vec3f upper = lower + cloud.spacing*(cloud.coords - vec3i(1,1,1));
-    std::cout << lower << "\t" << upper << std::endl;
+    std::cout << "volume bounds " << lower << "\t" << upper << std::endl;
     cloud.bounds.lower = lower;
     cloud.bounds.upper = upper;
-    vec3f org = vec3f(75.0,50.0,20.0);
+    vec3f org = vec3f(75.0,50.0,150.0);
     vec3f dir = vec3f(0.,0.,-1.0);
     // add a renderer
 #ifdef useRayMarchRenderer
     RayMarchVolRenderer ren = RayMarchVolRenderer(cloud);
+    ren.setCameraResolution(vec2i(1280,1024));
+    vec2i camerares = ren.getCameraResolution();
+    std::cout << "camera " << camerares.x << " " << camerares.y << std::endl;
     ren.setCameraEyePoint(org);
     ren.setCameraFocalPoint(org+dir);
-    Ray r;
-    r.org = org;
-    r.dir = dir;
-    auto t = intersectRayBox(org,dir,cloud.bounds);
-    r.t = t;
-    vec4f rgba{0.,0.,0.,1.};
-    float wt;
-    ren.RenderPixel(r,rgba,wt);
+    //Ray r;
+    //r.org = org;
+    //r.dir = dir;
+    //auto t = intersectRayBox(org,dir,cloud.bounds);
+    //r.t = t;
+    //vec4f rgba{0.,0.,0.,1.};
+    //float wt;
+    std::cout << "Render frame " << std::endl;
+    ren.RenderFrame();
+    std::cout << "Save Image " << std::endl;
+    ren.SaveImage(outfilename);
+    //ren.RenderPixel(r,rgba,wt);
 #else
     // generate a vklVolume
     VKLVolume vklCloud = DomainToVolume(cloud,getOpenVKLDevice());

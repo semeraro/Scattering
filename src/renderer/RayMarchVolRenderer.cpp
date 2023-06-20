@@ -14,7 +14,7 @@
 
 #include "RayMarchVolRenderer.h"
 
-RayMarchVolRenderer::RayMarchVolRenderer(Domain &dom) : cam(camera(vec2i(1024,768))) {
+RayMarchVolRenderer::RayMarchVolRenderer(Domain &dom) : cam(Camera()) {
     // create the vklvolume from the domain
     volume = DomainToVolume(dom,getOpenVKLDevice()); // DomainToVolume returns a committed volume. 
     volumeValueRange = vklGetValueRange(volume,0);
@@ -25,19 +25,41 @@ RayMarchVolRenderer::RayMarchVolRenderer(Domain &dom) : cam(camera(vec2i(1024,76
     // intervalIteratorContext
     intervalContext = vklNewIntervalIteratorContext(sampler);
     vklSetInt(intervalContext, "attributeIndex", 0);
-    vkl_range1f ranges[1] = {{0.000001, volumeValueRange.upper}};
+    vkl_range1f ranges[1] = {{volumeValueRange.lower, volumeValueRange.upper}};
     int num_ranges        = 1;
     VKLData rangesData =
       vklNewData(getOpenVKLDevice(), num_ranges, VKL_BOX1F, ranges, VKL_DATA_DEFAULT, 0);
     vklSetData(intervalContext, "valueRanges", rangesData);
     vklRelease(rangesData);
     vklCommit(intervalContext);
+    transferfunction.setValueRange(vec2f(volumeValueRange.lower,volumeValueRange.upper));
 };
 RayMarchVolRenderer::~RayMarchVolRenderer() {
     vklRelease(sampler);
     vklRelease(volume);
     vklRelease(intervalContext);
 };
+void RayMarchVolRenderer::RenderFrame() {
+    //vec2i resolution = cam.get_resolution();
+    vec2i resolution = cam.filmsize;
+    long numpixels = resolution.long_product();
+    framebuffer.resize(numpixels);
+    Ray r;
+    int index;
+    for(int row = 0;row<resolution.y;row++) {
+      for(int column = 0;column<resolution.x;column++) {
+        // get a ray from the camera
+        index = row*resolution.x + column;
+        r = cam.getRay(vec2i(column,row)); // column corresponds to the x coordinate row to the y from bottom left
+        r.t = intersectRayBox(r.org,r.dir,dom_bounds);
+        vec4f &color = framebuffer[index];
+        float wt{0};
+        RenderPixel(r,color,wt);
+        //std::cout << color.x << " " << color.y << " " << color.z << " " << wt << std::endl;
+      }
+    }
+}
+// this bit is lifted from RayMarchIteratorRenderer in the openvkl examples
 void RayMarchVolRenderer::RenderPixel(Ray r, vec4f &rgba, float &weight) {
     vkl_range1f tRange;
     tRange.lower = r.t.lower;
@@ -53,27 +75,62 @@ void RayMarchVolRenderer::RenderPixel(Ray r, vec4f &rgba, float &weight) {
     // sample the volume
     VKLInterval interval;
     int intervals = 0;
+    vec3f color(0.f);
+    float alpha = 0.f;
     while(vklIterateInterval(iterator,&interval)) {
+        float sdt = interval.nominalDeltaT;
+        // get a subinterval of this interval based on sdt.
+        box1f subInterval(interval.tRange.lower,
+                          min(interval.tRange.lower + sdt,
+                              interval.tRange.upper));
+        // now integrate along the subintervals
+
         intervals++;
-        printf(
-          "\t\tintervals %d tRange (%f %f)\n\t\tvalueRange (%f %f)\n\t\tnominalDeltaT "
-          "%f\n\n",intervals,
-          interval.tRange.lower,
-          interval.tRange.upper,
-          interval.valueRange.lower,
-          interval.valueRange.upper,
-          interval.nominalDeltaT);
+        while(subInterval.upper > subInterval.lower && alpha < 0.99){
+          // center of subinterval of size dt
+          const float t  = 0.5f * (subInterval.lower + subInterval.upper);
+          const float dt = subInterval.upper - subInterval.lower;
+          // sample it
+          vec3f c      = r.org + t * r.dir;
+          float sample = vklComputeSample(sampler,
+                                          (vkl_vec3f *)&c,
+                                          0,
+                                          0.f);
+          // map through transfer function
+          vec4f sampleColorAndOpacity = sampleTF(sample);
+
+          // accumulate contribution
+          const float clampedOpacity = clamp(sampleColorAndOpacity.w * dt);
+
+          sampleColorAndOpacity = sampleColorAndOpacity * clampedOpacity;
+
+          color = color + (1.f - alpha) * vec3f(sampleColorAndOpacity);
+          alpha = alpha + (1.f - alpha) * clampedOpacity;
+          // compute next sub interval
+          subInterval.lower = subInterval.upper;
+          subInterval.upper =
+              min(subInterval.lower + sdt, interval.tRange.upper);
+        }
+          //printf(
+           // "\t\tintervals %d tRange (%f %f)\n\t\tvalueRange (%f %f)\n\t\tnominalDeltaT "
+           // "%f\n\n",intervals,
+           // interval.tRange.lower,
+           // interval.tRange.upper,
+           // interval.valueRange.lower,
+           // interval.valueRange.upper,
+           // interval.nominalDeltaT);
     }
+    rgba = vec4f(color,alpha);
 };
 void RayMarchVolRenderer::setCameraResolution(vec2i resolution) {
-  cam.set_resolution(resolution);
+  cam.setFilmsize(resolution);
 };
 void RayMarchVolRenderer::setCameraEyePoint(vec3f eye) {
-  cam.set_eye_point(eye);
+  cam.setPosition(eye);
 };
 void RayMarchVolRenderer::setCameraFocalPoint(vec3f fp) {
-  cam.set_focal_point(fp);
+  cam.setFocus(fp);
 };
 void RayMarchVolRenderer::setCameraUpVector(vec3f up) {
-  cam.set_up_vector(up);
+  cam.setUp_Vector(up);
 };
