@@ -3,6 +3,7 @@
 
 #include "rkcommon/math/box.h"
 #include "rkcommon/math/vec.h"
+#include <vector>
 
 using namespace rkcommon::math;
 
@@ -12,3 +13,5 @@ using namespace rkcommon::math;
       vec3f dir;
       range1f t;
     };
+
+typedef std::vector<Ray> RayVector;
