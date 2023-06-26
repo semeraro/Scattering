@@ -15,6 +15,7 @@
 #include <rkcommon/tasking/parallel_for.h>
 #include "TransferFunction.h"
 #include <chrono>
+#define PARALLEL
 using Framebuffer = containers::AlignedVector<vec4f>;
 using Clock = std::chrono::high_resolution_clock;
 class RayMarchVolRenderer {
@@ -37,6 +38,7 @@ class RayMarchVolRenderer {
     vec4f sampleTF(float value) { return transferfunction.sampleTF(value);}
     private:
     Camera cam; // default camera size is 1024x768. fov = 60 degrees
+    int device_width = vklGetNativeSIMDWidth(getOpenVKLDevice());
     //Framebuffer ;
     Framebuffer framebuffer;
     //TransferFunction

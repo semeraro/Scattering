@@ -13,7 +13,7 @@
 // the volume itself. The size of the framebuffer corresponds to the resolution of the camera. 
 
 #include "RayMarchVolRenderer.h"
-#define PARALLEL
+//#define PARALLEL
 RayMarchVolRenderer::RayMarchVolRenderer(Domain &dom) : cam(Camera()) {
     // create the vklvolume from the domain
     volume = DomainToVolume(dom,getOpenVKLDevice()); // DomainToVolume returns a committed volume. 
@@ -40,7 +40,6 @@ RayMarchVolRenderer::~RayMarchVolRenderer() {
     vklRelease(intervalContext);
 };
 void RayMarchVolRenderer::RenderFrame() {
-    //vec2i resolution = cam.get_resolution();
     vec2i resolution = cam.filmsize;
     long numpixels = resolution.long_product();
     framebuffer.resize(numpixels);
@@ -85,6 +84,19 @@ void RayMarchVolRenderer::RenderPixel(Ray r, vec4f &rgba, float &weight) {
     vkl_range1f tRange;
     tRange.lower = r.t.lower;
     tRange.upper = r.t.upper;
+#ifdef VECTOR
+    int valid[8];
+    void *buffer = alloca(vklGetIntervalIteratorSize8(intervalContext));
+    VKLIntervalIterator8 iterator =
+          vklInitIntervalIterator8(valid,
+                                  intervalContext,
+                                  (vkl_vec3f *)&(r.org),
+                                  (vkl_vec3f *)&(r.dir),
+                                  &tRange,
+                                  1.0,
+                                  buffer);
+    VKLInterval8 interval;
+#else
     void *buffer = alloca(vklGetIntervalIteratorSize(intervalContext));
     VKLIntervalIterator iterator =
           vklInitIntervalIterator(intervalContext,
@@ -93,8 +105,9 @@ void RayMarchVolRenderer::RenderPixel(Ray r, vec4f &rgba, float &weight) {
                                   &tRange,
                                   1.0,
                                   buffer);
-    // sample the volume
     VKLInterval interval;
+#endif
+    // sample the volume
     int intervals = 0;
     vec3f color(0.f);
     float alpha = 0.f;
