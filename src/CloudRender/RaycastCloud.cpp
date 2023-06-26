@@ -13,6 +13,8 @@ int main(int argc, char **argv) {
     
     std::cout << " Starting ... " << std::endl;
     initializeOpenVKL();
+    int device_width = vklGetNativeSIMDWidth(getOpenVKLDevice());
+    std::cout << "The openvkl device width is " << device_width << std::endl;
     // read the data
     // letting the openvkl volume read the raw data and build a volume.
     std::string directory("C:\\Users\\Dave Semeraro\\Documents\\VolumeRendering\\Data\\");
@@ -26,25 +28,21 @@ int main(int argc, char **argv) {
     vec3f lower = cloud.origin;
     vec3f upper = lower + cloud.spacing*(cloud.coords - vec3i(1,1,1));
     std::cout << "volume bounds " << lower << "\t" << upper << std::endl;
+    vec3f center = (upper + lower)*0.5;
     cloud.bounds.lower = lower;
     cloud.bounds.upper = upper;
-    vec3f org = vec3f(75.0,50.0,150.0);
     vec3f dir = vec3f(0.,0.,-1.0);
+    //vec3f org = vec3f(75.0,50.0,0.);
+    vec3f org = center + vec3f(0.f,0.f,78.f + (upper - center ).z);
+    std::cout << "domain center " << center << " camera position " << org << std::endl;
     // add a renderer
 #ifdef useRayMarchRenderer
     RayMarchVolRenderer ren = RayMarchVolRenderer(cloud);
     ren.setCameraResolution(vec2i(1280,1024));
     vec2i camerares = ren.getCameraResolution();
     std::cout << "camera " << camerares.x << " " << camerares.y << std::endl;
-    ren.setCameraEyePoint(org);
-    ren.setCameraFocalPoint(org+dir);
-    //Ray r;
-    //r.org = org;
-    //r.dir = dir;
-    //auto t = intersectRayBox(org,dir,cloud.bounds);
-    //r.t = t;
-    //vec4f rgba{0.,0.,0.,1.};
-    //float wt;
+    //place the camera
+    ren.resetCamera(org,org+dir,vec3f(0.f,1.f,0.f));
     std::cout << "Render frame " << std::endl;
     ren.RenderFrame();
     std::cout << "Save Image " << std::endl;

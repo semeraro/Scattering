@@ -8,10 +8,11 @@
  * v points out the top of the camera. The u direction is the horizontal direction. u,v,w form a 
  * left handed coordinate system of unit vectors. 
  */
+#pragma once
 #include "rkcommon/math/vec.h"
 #include "ray.h"
 #include <vector>
-#include<iostream>
+#include <iostream>
 //
 //  simple camera class
 //
@@ -32,7 +33,7 @@ class Camera {
         vec3f screen(const vec2f &sp); // returns direction from camera origin to position on the screen.
         Ray getRay(const vec2f &screen_position); // returns a ray from camera origin to position on the screen. 
         Ray getRay(const vec2i &pixel);
-
+        //friend std::ostream & operator << (std::ostream &out, const Camera &C);
     public:
         // camera definitions
         vec3f position; // where the camera is in world space
@@ -42,7 +43,15 @@ class Camera {
         vec3f u,v,w; // unit basis vectors for camera in world coords.
         // film definitions
         vec2i filmsize; // (width,height) pixels in each direction
+        float aspect_ratio; 
         float field_of_view; // vertical half angle
+        float tanfov;
+        float d2fp; // distance to film plane
         long numRays; // number of primary rays
         RayVector Rays; // the rays
 };
+//std::ostream & operator << (std::ostream &out, const Camera &C) {
+            //out << "Eye: " << C.position << "\nFocal Pt: " << C.focus;
+           // out << "\nUp Vector: " << C.up_vector << "\nFOV: " << C.field_of_view;
+           // return out;        
+     // }
