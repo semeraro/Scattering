@@ -12,8 +12,11 @@
 #include <openvkl/openvkl.h>
 #include "rkcommon/containers/AlignedVector.h"
 #include "rkcommon/utility/SaveImage.h"
+#include <rkcommon/tasking/parallel_for.h>
 #include "TransferFunction.h"
+#include <chrono>
 using Framebuffer = containers::AlignedVector<vec4f>;
+using Clock = std::chrono::high_resolution_clock;
 class RayMarchVolRenderer {
     public:
     RayMarchVolRenderer(Domain &dom);
@@ -23,6 +26,7 @@ class RayMarchVolRenderer {
     void setCameraEyePoint(vec3f eye);
     void setCameraFocalPoint(vec3f fp);
     void setCameraUpVector(vec3f up);
+    void resetCamera(vec3f eye, vec3f fp, vec3f up);
     void setTransferFunctionValueRange(vec2f range) {transferfunction.setValueRange(range);};
     void RenderFrame();
     void SaveImage(std::string filename) {
@@ -43,4 +47,7 @@ class RayMarchVolRenderer {
     vkl_range1f volumeValueRange;
     box3f dom_bounds;
     VKLIntervalIteratorContext intervalContext;
+    typedef std::chrono::duration<float, std::milli> duration;
+    duration frametime{0};
+    duration rendertime{0};
 };

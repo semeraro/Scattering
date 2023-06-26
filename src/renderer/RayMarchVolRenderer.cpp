@@ -13,7 +13,7 @@
 // the volume itself. The size of the framebuffer corresponds to the resolution of the camera. 
 
 #include "RayMarchVolRenderer.h"
-
+#define PARALLEL
 RayMarchVolRenderer::RayMarchVolRenderer(Domain &dom) : cam(Camera()) {
     // create the vklvolume from the domain
     volume = DomainToVolume(dom,getOpenVKLDevice()); // DomainToVolume returns a committed volume. 
@@ -44,8 +44,25 @@ void RayMarchVolRenderer::RenderFrame() {
     vec2i resolution = cam.filmsize;
     long numpixels = resolution.long_product();
     framebuffer.resize(numpixels);
-    Ray r;
+    auto startrender = Clock::now();
+#ifdef PARALLEL
+    rkcommon::tasking::parallel_in_blocks_of<16>(
+      numpixels, [&](size_t ib, size_t ie) {
+        Ray r;
+        for (size_t idx = ib; idx < ie; ++idx) {
+          int row = idx/resolution.x; // number of pixels from top of image (y)
+          int column = idx % resolution.x; // number of pixels from left edge of image (x)
+          r = cam.getRay(vec2i(column,row)); // expects x,y order
+          r.t = intersectRayBox(r.org,r.dir,dom_bounds);
+          vec4f &color = framebuffer[idx];
+          float wt{0};
+          RenderPixel(r,color,wt);
+        }
+      }
+    );
+#else
     int index;
+    Ray r;
     for(int row = 0;row<resolution.y;row++) {
       for(int column = 0;column<resolution.x;column++) {
         // get a ray from the camera
@@ -58,6 +75,10 @@ void RayMarchVolRenderer::RenderFrame() {
         //std::cout << color.x << " " << color.y << " " << color.z << " " << wt << std::endl;
       }
     }
+#endif
+    auto endrender = Clock::now();
+    rendertime = endrender - startrender;
+    std::cout << " render time " << rendertime.count()/1000.0 << " seconds " << std::endl;
 }
 // this bit is lifted from RayMarchIteratorRenderer in the openvkl examples
 void RayMarchVolRenderer::RenderPixel(Ray r, vec4f &rgba, float &weight) {
@@ -133,4 +154,8 @@ void RayMarchVolRenderer::setCameraFocalPoint(vec3f fp) {
 };
 void RayMarchVolRenderer::setCameraUpVector(vec3f up) {
   cam.setUp_Vector(up);
+};
+void RayMarchVolRenderer::resetCamera(vec3f eye, vec3f fp, vec3f up) {
+  cam.resetCamera(eye, fp, up);
+  //std::cout << cam << std::endl;
 };
