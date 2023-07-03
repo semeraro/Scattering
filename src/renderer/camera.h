@@ -9,7 +9,8 @@
  * left handed coordinate system of unit vectors. 
  */
 #pragma once
-#include "rkcommon/math/vec.h"
+#include <rkcommon/math/vec.h>
+#include <rkcommon/math/LinearSpace.h>
 #include "ray.h"
 #include <vector>
 #include <iostream>
@@ -28,6 +29,7 @@ class Camera {
         void setFilmsize(const vec2i &fs);
         void generateRays();
         void UpdateCamera();
+        void buildTransform();
         void resetCamera(const vec3f &p,const vec3f &f,const vec3f &up);
         RayVector &getRays() { return Rays; }
         vec3f screen(const vec2f &sp); // returns direction from camera origin to position on the screen.
@@ -43,6 +45,8 @@ class Camera {
         vec3f u,v,w; // unit basis vectors for camera in world coords.
         // film definitions
         vec2i filmsize; // (width,height) pixels in each direction
+        linear3f cam2wrld;
+        linear3f wrld2cam;
         float aspect_ratio; 
         float field_of_view; // vertical half angle
         float tanfov;
