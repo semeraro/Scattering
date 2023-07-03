@@ -72,6 +72,7 @@ void RayMarchVolRenderer::RenderFrame() {
         float wt{0};
         RenderPixel(r,color,wt);
         //std::cout << color.x << " " << color.y << " " << color.z << " " << wt << std::endl;
+        //std::cout << "row - column: " << row << " - " << column << std::endl;
       }
     }
 #endif
@@ -155,6 +156,7 @@ void RayMarchVolRenderer::RenderPixel(Ray r, vec4f &rgba, float &weight) {
            // interval.nominalDeltaT);
     }
     rgba = vec4f(color,alpha);
+    weight = 1.f;
 };
 void RayMarchVolRenderer::setCameraResolution(vec2i resolution) {
   cam.setFilmsize(resolution);
