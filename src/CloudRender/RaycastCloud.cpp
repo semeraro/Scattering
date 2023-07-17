@@ -3,6 +3,7 @@
 #include "rkcommon/utility/SaveImage.h"
 #include <openvkl/openvkl.h>
 #include "renderer/RayMarchVolRenderer.h"
+#include "renderer/PathTraceRenderer.h"
 #include "renderer/Ray.h"
 #include "IO/Domain.h"
 #if defined(_MSC_VER)
@@ -37,8 +38,9 @@ int main(int argc, char **argv) {
     std::cout << "domain center " << center << " camera position " << org << std::endl;
     // add a renderer
 #ifdef useRayMarchRenderer
-    RayMarchVolRenderer ren = RayMarchVolRenderer(cloud);
-    ren.setCameraResolution(vec2i(1280,1024));
+    PathTraceRenderer ren = PathTraceRenderer(cloud);
+    //RayMarchVolRenderer ren = RayMarchVolRenderer(cloud);
+    ren.setCameraResolution(vec2i(1280,1280));
     vec2i camerares = ren.getCameraResolution();
     std::cout << "camera " << camerares.x << " " << camerares.y << std::endl;
     //place the camera
