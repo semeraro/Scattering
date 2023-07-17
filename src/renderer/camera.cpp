@@ -91,9 +91,9 @@ void Camera::UpdateCamera() { // update the camera internals
     tanfov = tan(deg2rad(field_of_view));
     up_vector = v;
     buildTransform();
-    std::cout << "\nW: " << w << "\nU: " << u << "\nV: " << v << std::endl;
-    std::cout << "\nC2W: " << cam2wrld << std::endl;
-    std::cout << "\nWorldDir: " << cam2wrld*vec3f(0.,0.,1.) << std::endl;
+    //std::cout << "\nW: " << w << "\nU: " << u << "\nV: " << v << std::endl;
+    //std::cout << "\nC2W: " << cam2wrld << std::endl;
+    //std::cout << "\nWorldDir: " << cam2wrld*vec3f(0.,0.,1.) << std::endl;
 }
 
 void Camera::setPosition(const vec3f &pos) {
