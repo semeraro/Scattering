@@ -23,7 +23,10 @@ set(IOLIBS "")
 set(IOINCLUDES "")
 set(VKL_TESTING_DIR "C:\\$ENV{homepath}\\Documents\\VolumeRendering\\openvkl\\testing")
 
-add_library(Renderers STATIC ${CMAKE_CURRENT_SOURCE_DIR}/RayMarchVolRenderer.cpp ${CMAKE_CURRENT_SOURCE_DIR}/camera.cpp ${CMAKE_CURRENT_SOURCE_DIR}/TransferFunction.cpp)
+add_library(Renderers STATIC ${CMAKE_CURRENT_SOURCE_DIR}/RayMarchVolRenderer.cpp 
+                            ${CMAKE_CURRENT_SOURCE_DIR}/camera.cpp 
+                            ${CMAKE_CURRENT_SOURCE_DIR}/TransferFunction.cpp
+                            ${CMAKE_CURRENT_SOURCE_DIR}/PathTraceRenderer.cpp)
 TARGET_COMPILE_DEFINITIONS(Renderers PUBLIC ${COMPILER_DEFS})
 target_include_directories(Renderers PUBLIC ${IOINCLUDES} ${VKL_TESTING_DIR} ..)
 target_link_libraries(Renderers  openvkl::openvkl rkcommon::rkcommon ScatterIO ${TESTING})
