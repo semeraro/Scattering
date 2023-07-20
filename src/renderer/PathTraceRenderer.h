@@ -33,6 +33,7 @@ inline float getRandomUniform()
 class PathTraceRenderer : public RayMarchVolRenderer {
     public:
         PathTraceRenderer(Domain dom);
+        float sigmaTScale;
         //~PathTraceRenderer();
         void RenderFrame();
         void RenderPixel(size_t seed, Ray &r, vec4f &rgba, float &weight);
