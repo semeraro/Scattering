@@ -17,6 +17,7 @@
 #include <chrono>
 #define PARALLEL
 using Framebuffer = containers::AlignedVector<vec4f>;
+using Weightbuffer = containers::AlignedVector<float>;
 using Clock = std::chrono::high_resolution_clock;
 class RayMarchVolRenderer {
     public:
@@ -36,11 +37,12 @@ class RayMarchVolRenderer {
     }
     vec2i getCameraResolution() { return cam.filmsize;}
     vec4f sampleTF(float value) { return transferfunction.sampleTF(value);}
-    private:
+    protected:
     Camera cam; // default camera size is 1024x768. fov = 60 degrees
     int device_width = vklGetNativeSIMDWidth(getOpenVKLDevice());
     //Framebuffer ;
     Framebuffer framebuffer;
+    Weightbuffer weightbuffer;
     //TransferFunction
     TransferFunction transferfunction;
     //rkcommon::containers::AlignedVector<vec4f> framebuffer;

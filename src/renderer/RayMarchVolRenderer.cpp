@@ -43,6 +43,7 @@ void RayMarchVolRenderer::RenderFrame() {
     vec2i resolution = cam.filmsize;
     long numpixels = resolution.long_product();
     framebuffer.resize(numpixels);
+    weightbuffer.resize(numpixels);
     auto startrender = Clock::now();
 #ifdef PARALLEL
     rkcommon::tasking::parallel_in_blocks_of<16>(
@@ -54,7 +55,8 @@ void RayMarchVolRenderer::RenderFrame() {
           r = cam.getRay(vec2i(column,row)); // expects x,y order
           r.t = intersectRayBox(r.org,r.dir,dom_bounds);
           vec4f &color = framebuffer[idx];
-          float wt{0};
+          float &wt = weightbuffer[idx];
+          //float wt{0};
           RenderPixel(r,color,wt);
         }
       }
