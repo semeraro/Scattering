@@ -61,8 +61,16 @@ Ray Camera::getRay(const vec2i &pixel) {
     Ray ray;
     float x,y;
     // coordinates in screen space
-    y = tanfov*(2.0*(float)pixel.y/(float)(filmsize.y-1) - 1.0f); 
-    x = tanfov*aspect_ratio*(2.0*(float)pixel.x/(float)(filmsize.x-1)-1.0f);
+    if(filmsize.y == 1) {
+        y = 0.f;
+    } else {
+        y = tanfov*(2.0*(float)pixel.y/(float)(filmsize.y-1) - 1.0f); 
+    }
+    if(filmsize.x == 1) { 
+        x = 0.f;
+    } else {
+        x = tanfov*aspect_ratio*(2.0*(float)pixel.x/(float)(filmsize.x-1)-1.0f);
+    }
     ray.t = range1f(0.f,inf);
     ray.org = position;
     ray.dir = screen(vec2f(x,y));
