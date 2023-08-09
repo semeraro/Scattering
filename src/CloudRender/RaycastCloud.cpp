@@ -34,18 +34,21 @@ int main(int argc, char **argv) {
     cloud.bounds.upper = upper;
     vec3f dir = vec3f(0.,0.,-1.0);
     //vec3f org = vec3f(75.0,50.0,0.);
-    vec3f org = center + vec3f(0.f,0.f,78.f + (upper - center ).z);
-    std::cout << "domain center " << center << " camera position " << org << std::endl;
+    vec3f org = center + vec3f(0.f,0.f,48.f + (upper - center ).z);
     // add a renderer
 #ifdef useRayMarchRenderer
-    PathTraceRenderer ren = PathTraceRenderer(cloud);
-    //RayMarchVolRenderer ren = RayMarchVolRenderer(cloud);
-    ren.setCameraResolution(vec2i(1280,1280));
+    //PathTraceRenderer ren = PathTraceRenderer(cloud);
+    //ren.sigmaSScale = 100.0f;
+    //ren.sigmaTScale = 3.0f;
+    //ren.maxNumScatters = 256;
+    RayMarchVolRenderer ren = RayMarchVolRenderer(cloud);
+    ren.setCameraResolution(vec2i(512,512));
     vec2i camerares = ren.getCameraResolution();
     std::cout << "camera " << camerares.x << " " << camerares.y << std::endl;
     //place the camera
-    ren.resetCamera(org,org+dir,vec3f(0.f,1.f,0.f));
+    ren.resetCamera(org,center,vec3f(0.f,1.f,0.f));
     std::cout << "Render frame " << std::endl;
+    std::cout << "domain center " << center << " camera position " << org << " focus " << center << std::endl;
     ren.RenderFrame();
     std::cout << "Save Image " << std::endl;
     ren.SaveImage(outfilename);
