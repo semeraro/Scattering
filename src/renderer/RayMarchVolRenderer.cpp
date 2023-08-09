@@ -18,7 +18,8 @@ RayMarchVolRenderer::RayMarchVolRenderer(Domain &dom) : cam(Camera()) {
     // create the vklvolume from the domain
     volume = DomainToVolume(dom,getOpenVKLDevice()); // DomainToVolume returns a committed volume. 
     volumeValueRange = vklGetValueRange(volume,0);
-    dom_bounds = dom.bounds;
+    reinterpret_cast<vkl_box3f &>(dom_bounds) = vklGetBoundingBox(volume);
+    //dom_bounds = dom.bounds;
     // make a sampler
     sampler = vklNewSampler(volume);
     vklCommit(sampler);
