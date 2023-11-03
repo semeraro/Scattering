@@ -38,9 +38,9 @@ int main(int argc, char **argv) {
     // add a renderer
 #ifdef useRayMarchRenderer
     //PathTraceRenderer ren = PathTraceRenderer(cloud);
-    //ren.sigmaSScale = 100.0f;
-    //ren.sigmaTScale = 3.0f;
-    //ren.maxNumScatters = 256;
+    //ren.sigmaSScale = 200.5f;
+    //ren.sigmaTScale = 800.0f;
+    //ren.maxNumScatters = 1200;
     RayMarchVolRenderer ren = RayMarchVolRenderer(cloud);
     ren.setCameraResolution(vec2i(512,512));
     vec2i camerares = ren.getCameraResolution();
